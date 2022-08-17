@@ -1,24 +1,50 @@
 <template>
-  <div class="bk-drag-view" @click="handleClear">
+  <div class="bk-drag-view" @mousedown="handleMouseDown('clear')">
     <div
       class="bk-drag-item"
       v-for="(item, index) in modelValue"
       :key="index"
       :style="itemStyle(item)"
-      @mousedown="handleMouseDown('move', $event, item, index)"
-      @click.stop=""
+      @mousedown.stop="handleMouseDown('move', $event, item, index)"
     >
       <div class="bk-drag-item-box">
         <div v-if="item.selected" class="bk-drag-item-select">
-          <div class="rotate-circle" />
-          <div class="line line-n" />
-          <div class="line line-s" />
-          <div class="line line-e" />
-          <div class="line line-w" />
-          <div class="circle circle-wn" />
-          <div class="circle circle-en" />
-          <div class="circle circle-es" />
-          <div class="circle circle-ws" />
+          <div
+            class="rotate-circle"
+            @mousedown.stop="handleMouseDown('rotate', $event)"
+          />
+          <div
+            class="line line-n"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'n')"
+          />
+          <div
+            class="line line-s"
+            @mousedown.stop="handleMouseDown('resizable', $event, 's')"
+          />
+          <div
+            class="line line-e"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'e')"
+          />
+          <div
+            class="line line-w"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'w')"
+          />
+          <div
+            class="circle circle-wn"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'wn')"
+          />
+          <div
+            class="circle circle-en"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'en')"
+          />
+          <div
+            class="circle circle-es"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'es')"
+          />
+          <div
+            class="circle circle-ws"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'ws')"
+          />
         </div>
         <div class="bk-drag-item-inner">
           <slot :item="item" />
@@ -70,6 +96,7 @@ const handleMouseDown = (action, event, ...params) => {
     default:
       break
   }
+  console.log(action)
   triggerState.value = action
 }
 
@@ -91,6 +118,7 @@ window.onmouseup = event => {
       handleMoveEnd(event)
       break
     default:
+      handleClear()
       break
   }
 }
