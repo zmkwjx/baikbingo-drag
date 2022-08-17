@@ -1,0 +1,157 @@
+.bk-drag-item {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  &-select {
+    .rotate-circle {
+      position: absolute;
+      left: 50%;
+      top: -38px;
+      margin-left: -10px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      box-shadow: 0 0 2px 0 rgb(61 73 92 / 20%);
+      border: 1px solid #ccd5db;
+      text-align: center;
+      border-radius: 50%;
+      line-height: 20px;
+      &::before {
+        position: absolute;
+        content: ' ';
+        cursor: url(./circle.ico) 8 8, default;
+        background-image: url(./circle.ico);
+        background-size: 100% 100%;
+        background-repeat: no-repeat;
+        width: 14px;
+        height: 14px;
+        left: 3px;
+        top: 3px;
+      }
+    }
+    .circle {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #fff;
+      border: 1px solid rgb(0, 255, 128);
+      border-radius: 10px;
+      z-index: 11;
+      &-wn {
+        cursor: nw-resize;
+        top: -5px;
+        left: -5px;
+      }
+      &-en {
+        cursor: ne-resize;
+        top: -5px;
+        right: -5px;
+      }
+      &-es {
+        cursor: se-resize;
+        bottom: -5px;
+        right: -5px;
+      }
+      &-ws {
+        cursor: sw-resize;
+        bottom: -5px;
+        left: -5px;
+      }
+    }
+    .line {
+      position: absolute;
+      border-color: rgb(0, 255, 128);
+      border-width: 0;
+      border-style: solid;
+      // background-color: rgb(0, 255, 128);
+      z-index: 10;
+      &-n,
+      &-s,
+      &-e,
+      &-w {
+        &::before {
+          content: ' ';
+          width: 10px;
+          height: 10px;
+          background-color: #fff;
+          border: 1px solid rgb(0, 255, 128);
+          border-radius: 10px;
+        }
+      }
+      // 北
+      &-n {
+        top: -4px;
+        width: 100%;
+        height: 4px;
+        border-width: 0 0 1px 0;
+        cursor: ns-resize;
+        &::before {
+          position: absolute;
+          left: 50%;
+          top: -2px;
+          margin-left: -5px;
+        }
+      }
+      // 南
+      &-s {
+        bottom: -4px;
+        width: 100%;
+        height: 4px;
+        border-width: 1px 0 0 0;
+        cursor: ns-resize;
+        &::before {
+          position: absolute;
+          left: 50%;
+          bottom: -2px;
+          margin-left: -5px;
+        }
+      }
+      // 东
+      &-e {
+        right: -4px;
+        height: 100%;
+        width: 4px;
+        cursor: ew-resize;
+        border-width: 0 0 0 1px;
+        &::before {
+          position: absolute;
+          top: 50%;
+          right: -2px;
+          margin-top: -5px;
+        }
+      }
+      // 西
+      &-w {
+        left: -4px;
+        height: 100%;
+        width: 4px;
+        cursor: ew-resize;
+        border-width: 0 1px 0 0;
+        &::before {
+          position: absolute;
+          top: 50%;
+          left: -2px;
+          margin-top: -5px;
+        }
+      }
+    }
+  }
+  &-box {
+    height: 100%;
+    width: 100%;
+    position: relative;
+  }
+  &-inner {
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(122, 122, 122, 0.5);
+    pointer-events: none;
+  }
+}
+.bk-drag-view {
+  height: 100%;
+  width: 100%;
+}
