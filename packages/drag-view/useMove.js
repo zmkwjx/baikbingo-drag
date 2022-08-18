@@ -5,7 +5,8 @@ const useMove = modelValue => {
   const handleSelect = (_, index = -1) => {
     if (moveState.value.length < 1) {
       for (let i = 0; i < modelValue.value.length; i++) {
-        modelValue.value[i].selected = i === index
+        const draggable = modelValue.value[i].draggable ?? true
+        modelValue.value[i].selected = i === index && draggable
       }
     }
   }
@@ -70,6 +71,7 @@ const useMove = modelValue => {
     } else {
       moveState.value = []
     }
+    moveTimer.value && clearTimeout(moveTimer.value)
   }
 
   // 返回

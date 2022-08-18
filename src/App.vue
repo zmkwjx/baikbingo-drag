@@ -13,23 +13,26 @@ import { ref } from 'vue'
 
 const handleAdd = () => {
   dragList.value.push({
-    x: -10,
-    y: -10,
+    x: 10,
+    y: 10,
     w: 200,
     h: 160,
     z: 1,
+    r: 0,
     selected: true
   })
 }
 
 const dragList = ref([
   {
-    x: -10,
-    y: -10,
+    x: 10,
+    y: 10,
     w: 200,
     h: 160,
     z: 1,
-    selected: true
+    r: 0,
+    selected: true,
+    draggable: false
   }
 ])
 </script>
