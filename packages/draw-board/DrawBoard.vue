@@ -35,7 +35,7 @@ const drawStyle = computed(() => {
 .bk-draw-board {
   height: 100%;
   width: 100%;
-  user-select: none;
+  // user-select: none;
 }
 .bk-draw-board[theme='default'] {
   border: 1px dashed #e0e0e0;

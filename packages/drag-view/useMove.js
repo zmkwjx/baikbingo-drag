@@ -5,8 +5,7 @@ const useMove = modelValue => {
   const handleSelect = (_, index = -1) => {
     if (moveState.value.length < 1) {
       for (let i = 0; i < modelValue.value.length; i++) {
-        const draggable = modelValue.value[i].draggable ?? true
-        modelValue.value[i].selected = i === index && draggable
+        modelValue.value[i].selected = i === index
       }
     }
   }
@@ -24,6 +23,7 @@ const useMove = modelValue => {
     // 开始先结束
     handleMoveEnd(event)
     // 初始点坐标
+    value.draggable ??= true
     moveLocal.value[0].x = event.pageX
     moveLocal.value[0].y = event.pageY
     // 筛出选中
@@ -52,8 +52,10 @@ const useMove = modelValue => {
       const movementX = moveLocal.value[1].x - moveLocal.value[0].x
       const movementY = moveLocal.value[1].y - moveLocal.value[0].y
       for (let i = 0; i < moveState.value.length; i++) {
-        moveState.value[i].x += movementX
-        moveState.value[i].y += movementY
+        if (moveState.value[i].draggable) {
+          moveState.value[i].x += movementX
+          moveState.value[i].y += movementY
+        }
       }
       moveLocal.value[0].x = moveLocal.value[1].x
       moveLocal.value[0].y = moveLocal.value[1].y
