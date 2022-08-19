@@ -1,7 +1,9 @@
 <template>
   <draw-board height="400" width="650">
     <drag-view v-model="dragList">
-      <input v-model="fddd" @click="handlec" />. asdasdas
+      <template #default>
+        <h1>A</h1>
+      </template>
     </drag-view>
   </draw-board>
   <button @click="handleAdd">添加</button>
@@ -10,11 +12,6 @@
 import DrawBoard from '@packages/draw-board'
 import DragView from '@packages/drag-view'
 import { ref } from 'vue'
-
-const fddd = ref('asd')
-const handlec = () => {
-  console.log('ddd')
-}
 
 const handleAdd = () => {
   dragList.value.push({
@@ -37,7 +34,7 @@ const dragList = ref([
     z: 1,
     r: 0,
     selected: true,
-    draggable: false
+    draggable: true
   }
 ])
 </script>

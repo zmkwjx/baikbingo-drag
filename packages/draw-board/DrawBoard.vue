@@ -38,7 +38,7 @@ const drawStyle = computed(() => {
   // user-select: none;
 }
 .bk-draw-board[theme='default'] {
-  border: 1px dashed #e0e0e0;
-  background-color: antiquewhite;
+  // border: 1px dashed #e0e0e0;
+  // background-color: antiquewhite;
 }
 </style>
