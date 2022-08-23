@@ -14,7 +14,7 @@ const useRotate = modelValue => {
   const logState = ref([])
   const logLocal = ref({ x: 0, y: 0 })
 
-  // 开始
+  // 开始监听旋转状态
   const handleRotateStart = (event, value) => {
     // 开始先结束
     handleRotateEnd(event)
@@ -27,7 +27,7 @@ const useRotate = modelValue => {
     logIndex.value = modelValue.value.findIndex(item => item === value)
   }
 
-  // 拉伸中
+  // 监听旋转中的状态
   const logTimer = ref()
   const handleRotate = event => {
     // 如为空则跳出
@@ -39,7 +39,7 @@ const useRotate = modelValue => {
       const local = { x: event.pageX, y: event.pageY }
       const rotate = calcAngle(logLocal.value, local)
       // 获取旋转的差值
-      const moveR = rotate - logState.value[logIndex.value].r
+      const moveR = rotate - modelValue.value[logIndex.value].r
       // 赋值
       for (let i = 0; i < logState.value.length; i++) {
         const r = logState.value[i].r + moveR

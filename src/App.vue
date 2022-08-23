@@ -2,7 +2,7 @@
   <draw-board height="400" width="650">
     <drag-view v-model="dragList">
       <template #default>
-        <h1>A</h1>
+        <!-- <h1>A</h1> -->
       </template>
     </drag-view>
   </draw-board>
