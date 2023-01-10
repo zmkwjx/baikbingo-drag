@@ -17,42 +17,42 @@
           <div
             v-if="item.resizable ?? true"
             class="line line-n"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'n')"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'tm')"
           />
           <div
             v-if="item.resizable ?? true"
             class="line line-s"
-            @mousedown.stop="handleMouseDown('resizable', $event, 's')"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'bm')"
           />
           <div
             v-if="item.resizable ?? true"
             class="line line-e"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'e')"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'mr')"
           />
           <div
             v-if="item.resizable ?? true"
             class="line line-w"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'w')"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'ml')"
           />
           <div
             v-if="item.resizable ?? true"
             class="circle circle-wn"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'wn')"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'tl')"
           />
           <div
             v-if="item.resizable ?? true"
             class="circle circle-en"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'en')"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'tr')"
           />
           <div
             v-if="item.resizable ?? true"
             class="circle circle-es"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'es')"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'br')"
           />
           <div
             v-if="item.resizable ?? true"
             class="circle circle-ws"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'ws')"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'bl')"
           />
         </div>
         <div class="bk-drag-item-inner">

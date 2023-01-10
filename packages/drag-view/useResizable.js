@@ -1,217 +1,210 @@
 import { ref } from 'vue'
 
-/**
- * 旋转之后的八点坐标
- * @param {*} item
- */
-const transform = item => {
-  const { x, y, w, h } = item
-  const r = Math.sqrt(Math.pow(w, 2) + Math.pow(h, 2)) / 2
-  const a = Math.round((Math.atan(h / w) * 180) / Math.PI)
-  const tlbra = 180 - item.r - a
-  const trbla = a - item.r
-  const ta = 90 - item.r
-  const ra = item.r
-  // 获取中位
-  const halfWidth = w / 2
-  const halfHeight = h / 2
-  // 获取中心点坐标
-  const middleX = x + halfWidth
-  const middleY = y + halfHeight
-  // 获取八点坐标
-  const topLeft = {
-    x: middleX + r * Math.cos((tlbra * Math.PI) / 180),
-    y: middleY - r * Math.sin((tlbra * Math.PI) / 180)
-  }
-  const top = {
-    x: middleX + halfHeight * Math.cos((ta * Math.PI) / 180),
-    y: middleY - halfHeight * Math.sin((ta * Math.PI) / 180)
-  }
-  const topRight = {
-    x: middleX + r * Math.cos((trbla * Math.PI) / 180),
-    y: middleY - r * Math.sin((trbla * Math.PI) / 180)
-  }
-  const right = {
-    x: middleX + halfWidth * Math.cos((ra * Math.PI) / 180),
-    y: middleY + halfWidth * Math.sin((ra * Math.PI) / 180)
-  }
-  const bottomRight = {
-    x: middleX - r * Math.cos((tlbra * Math.PI) / 180),
-    y: middleY + r * Math.sin((tlbra * Math.PI) / 180)
-  }
-  const bottom = {
-    x: middleX - halfHeight * Math.sin((ra * Math.PI) / 180),
-    y: middleY + halfHeight * Math.cos((ra * Math.PI) / 180)
-  }
-  const bottomLeft = {
-    x: middleX - r * Math.cos((trbla * Math.PI) / 180),
-    y: middleY + r * Math.sin((trbla * Math.PI) / 180)
-  }
-  const left = {
-    x: middleX - halfWidth * Math.cos((ra * Math.PI) / 180),
-    y: middleY - halfWidth * Math.sin((ra * Math.PI) / 180)
-  }
-  // 找到最小/大的X/Y坐标值
-  const minX = Math.min(topLeft.x, topRight.x, bottomRight.x, bottomLeft.x)
-  const maxX = Math.max(topLeft.x, topRight.x, bottomRight.x, bottomLeft.x)
-  const minY = Math.min(topLeft.y, topRight.y, bottomRight.y, bottomLeft.y)
-  const maxY = Math.max(topLeft.y, topRight.y, bottomRight.y, bottomLeft.y)
+// 返回相对于参考点旋转后的坐标
+const rotatedPoint = (item, offsetX, offsetY) => {
+  const rad = (Math.PI / 180) * item.r
+  const cos = Math.cos(rad)
+  const sin = Math.sin(rad)
+  const originX = item.x + item.w / 2
+  const originY = item.y + item.h / 2
+  let x = offsetX - originX
+  let y = offsetY - originY
   return {
-    point: [
-      topLeft,
-      top,
-      topRight,
-      right,
-      bottomRight,
-      bottom,
-      bottomLeft,
-      left
-    ],
-    width: maxX - minX,
-    height: maxY - minY,
-    left: minX,
-    right: maxX,
-    top: minY,
-    bottom: maxY
+    x: x * cos - y * sin + originX,
+    y: x * sin + y * cos + originY
   }
 }
 
-function getScaledRect (params, baseIndex) {
-  var { x, y, w, h, r, scale } = params
-  var offset = {
-    x: 0,
-    y: 0
-  }
-  var deltaXScale = scale.x - 1
-  var deltaYScale = scale.y - 1
-  var deltaWidth = w * deltaXScale
-  var deltaHeight = h * deltaYScale
-  var newWidth = w + deltaWidth
-  var newHeight = h + deltaHeight
-  var newX = x - deltaWidth / 2
-  var newY = y - deltaHeight / 2
-  if (baseIndex) {
-    var points = [
-      { x, y },
-      { x: x + w, y },
-      { x: x + w, y: y + h },
-      { x, y: y + h }
-    ]
-    var newPoints = [
-      { x: newX, y: newY },
-      { x: newX + newWidth, y: newY },
-      { x: newX + newWidth, y: newY + newHeight },
-      { x: newX, y: newY + newHeight }
-    ]
-    offset.x = points[baseIndex].x - newPoints[baseIndex].x
-    offset.y = points[baseIndex].y - newPoints[baseIndex].y
-  }
+// 还原坐标
+const restorePoint = (item, local) => {
+  const rad = (Math.PI / 180) * item.r
+  const cos = Math.cos(rad)
+  const sin = Math.sin(rad)
+  const originX = item.x + item.w / 2
+  const originY = item.y + item.h / 2
+  let x = local.x - originX
+  let y = local.y - originY
   return {
-    x: newX + offset.x,
-    y: newY + offset.y,
-    w: newWidth,
-    h: newHeight,
-    r
+    x: x * cos + y * sin + originX,
+    y: y * cos - x * sin + originY
   }
-}
-
-/**
- * 根据缩放基点和缩放比例取得新的rect
- * @param  {[type]} oPoint               [description]
- * @param  {[type]} scale            [description]
- * @param  {[type]} oTransformedRect [description]
- * @param  {[type]} baseIndex        [description]
- * @return {[type]}                  [description]
- */
-const getNewRect = (oPoint, scale, oTransformedRect, baseIndex) => {
-  const scaledRect = getScaledRect({ scale, ...oPoint })
-  const transformedRotateRect = transform(scaledRect)
-  // 计算到平移后的新坐标
-  const translatedX =
-    oTransformedRect.point[baseIndex].x -
-    transformedRotateRect.point[baseIndex].x +
-    transformedRotateRect.left
-  const translatedY =
-    oTransformedRect.point[baseIndex].y -
-    transformedRotateRect.point[baseIndex].y +
-    transformedRotateRect.top
-
-  // 计算平移后元素左上角的坐标
-  const newX = translatedX + transformedRotateRect.width / 2 - scaledRect.w / 2
-  const newY = translatedY + transformedRotateRect.height / 2 - scaledRect.h / 2
-
-  // 缩放后元素的高宽
-  const newWidth = scaledRect.w
-  const newHeight = scaledRect.h
-
-  return {
-    x: newX,
-    y: newY,
-    w: newWidth,
-    h: newHeight
-  }
-}
-
-// 保留n位小数
-const toNumberFixed = (value, n = 3) => {
-  const num = value.toFixed(n)
-  return Number(num)
-}
-
-// 计算两个坐标点之间的距离
-const getDistance = (a, b) => {
-  const x = Math.pow(a.x - b.x, 2)
-  const y = Math.pow(a.y - b.y, 2)
-  return Math.sqrt(x + y)
 }
 
 // 拒绝拉伸
-const stopResizabl = (point, local) => {
-  // const L1 = getDistance(point, local[0])
-  const L2 = getDistance(point, local[1])
-  const L3 = getDistance(local[0], local[1])
-  return L2 === L3
+const stopResizabl = (item, local, direction) => {
+  // 拒绝拉伸
+  switch (direction) {
+    case 'tm':
+      if (restorePoint(item, local[1]).y >= item.y + item.h) return true
+      break
+    case 'bm':
+      if (restorePoint(item, local[1]).y <= item.y) return true
+      break
+    case 'ml':
+      if (restorePoint(item, local[1]).x >= item.x + item.w) return true
+      break
+    case 'mr':
+      if (restorePoint(item, local[1]).x <= item.x) return true
+      break
+    case 'tl':
+      if (restorePoint(item, local[1]).y >= item.y + item.h) return true
+      if (restorePoint(item, local[1]).x >= item.x + item.w) return true
+      break
+    case 'tr':
+      if (restorePoint(item, local[1]).y >= item.y + item.h) return true
+      if (restorePoint(item, local[1]).x <= item.x) return true
+      break
+    case 'bl':
+      if (restorePoint(item, local[1]).y <= item.y) return true
+      if (restorePoint(item, local[1]).x >= item.x + item.w) return true
+      break
+    case 'br':
+      if (restorePoint(item, local[1]).y <= item.y) return true
+      if (restorePoint(item, local[1]).x <= item.x) return true
+      break
+    default:
+      break
+  }
+  return false
 }
 
 // 开始拉伸
-const directionIndex = { wn: 4, n: 5, en: 6, e: 7, es: 0, s: 1, ws: 2, w: 3 }
 const setResizabl = (item, local, direction) => {
-  const baseIndex = directionIndex[direction]
-  // 计算初始状态旋转后的rect
-  const transformedRect = transform(item)
-  // 取得旋转后的8点坐标
-  const { point } = transformedRect
-  // 判断是否可以拉伸
-  if (stopResizabl(point[baseIndex], local)) return
-  // 获取对角线点
-  const oppositeX = point[baseIndex].x
-  const oppositeY = point[baseIndex].y
-  // 鼠标释放点距离当前点对角线点的偏移量
-  const offsetWidth = Math.abs(local[0].x - oppositeX)
-  const offsetHeight = Math.abs(local[0].y - oppositeY)
-  // 记录最原始的状态
-  const oPoint = Object.assign({}, item)
-  // 判断是根据x方向的偏移量来计算缩放比还是y方向的来计算
-  const scale = { x: 1, y: 1 }
-  let realScale = 1
-  if (offsetWidth > offsetHeight) {
-    realScale = Math.abs(local[1].x - oppositeX) / offsetWidth
+  if (stopResizabl(item, local, direction)) return
+  // 获取鼠标移动的坐标差
+  let deltaX = local[1].x - local[0].x
+  let deltaY = local[1].y - local[0].y
+  // 四个顶点坐标
+  const TL = rotatedPoint(item, item.x, item.y)
+  const TR = rotatedPoint(item, item.x + item.w, item.y)
+  const BL = rotatedPoint(item, item.x, item.y + item.h)
+  const BR = rotatedPoint(item, item.x + item.w, item.y + item.h)
+  // 考虑放缩
+  let diffX, diffY, scale, scaleB, scaleC, newX, newY, newW, newH
+  let Fixed = {} // 固定点
+  let BX = {} // 高度边选点
+  let CX = {} //  宽度边选点
+  let Va = {} // 固定点到鼠标 向量
+  let Vb = {} // 固定点到投影边  向量
+  let Vc = {} // 另一边投影
+  let Vw = {} // 宽度向量
+  let Vh = {} // 高度向量
+  // 拖动中点
+  if (direction.includes('m')) {
+    switch (direction) {
+      case 'tm':
+        diffX = deltaX + (TL.x + TR.x) / 2
+        diffY = deltaY + (TL.y + TR.y) / 2
+        Fixed = BL
+        BX = TL
+        CX = BR
+        Va = { x: diffX - Fixed.x, y: diffY - Fixed.y }
+        Vb = { x: BX.x - Fixed.x, y: BX.y - Fixed.y }
+        scale =
+          (Va.x * Vb.x + Va.y * Vb.y) / (Math.pow(Vb.x, 2) + Math.pow(Vb.y, 2))
+        Vw = { x: CX.x - Fixed.x, y: CX.y - Fixed.y }
+        Vh = { x: Vb.x * scale, y: Vb.y * scale }
+        break
+      case 'bm':
+        diffX = deltaX + (BL.x + BR.x) / 2
+        diffY = deltaY + (BL.y + BR.y) / 2
+        Fixed = TL
+        BX = BL
+        CX = TR
+        Va = { x: diffX - Fixed.x, y: diffY - Fixed.y }
+        Vb = { x: BX.x - Fixed.x, y: BX.y - Fixed.y }
+        scale =
+          (Va.x * Vb.x + Va.y * Vb.y) / (Math.pow(Vb.x, 2) + Math.pow(Vb.y, 2))
+        Vw = { x: CX.x - Fixed.x, y: CX.y - Fixed.y }
+        Vh = { x: Vb.x * scale, y: Vb.y * scale }
+        break
+      case 'ml':
+        diffX = deltaX + (TL.x + BL.x) / 2
+        diffY = deltaY + (TL.y + BL.y) / 2
+        Fixed = BR
+        BX = BL
+        CX = TR
+        Va = { x: diffX - Fixed.x, y: diffY - Fixed.y }
+        Vb = { x: BX.x - Fixed.x, y: BX.y - Fixed.y }
+        scale =
+          (Va.x * Vb.x + Va.y * Vb.y) / (Math.pow(Vb.x, 2) + Math.pow(Vb.y, 2))
+        Vh = { x: CX.x - Fixed.x, y: CX.y - Fixed.y }
+        Vw = { x: Vb.x * scale, y: Vb.y * scale }
+        break
+      case 'mr':
+        diffX = deltaX + (TR.x + TR.x) / 2
+        diffY = deltaY + (TR.y + TR.y) / 2
+        Fixed = BL
+        BX = BR
+        CX = TL
+        Va = { x: diffX - Fixed.x, y: diffY - Fixed.y }
+        Vb = { x: BX.x - Fixed.x, y: BX.y - Fixed.y }
+        scale =
+          (Va.x * Vb.x + Va.y * Vb.y) / (Math.pow(Vb.x, 2) + Math.pow(Vb.y, 2))
+        Vh = { x: CX.x - Fixed.x, y: CX.y - Fixed.y }
+        Vw = { x: Vb.x * scale, y: Vb.y * scale }
+        break
+      default:
+        break
+    }
+    // 反推宽高
+    newX = Fixed.x + (Vw.x + Vh.x) / 2
+    newY = Fixed.y + (Vw.y + Vh.y) / 2
+    newW = Math.sqrt(Math.pow(Vw.x, 2) + Math.pow(Vw.y, 2))
+    newH = Math.sqrt(Math.pow(Vh.x, 2) + Math.pow(Vh.y, 2))
   } else {
-    realScale = Math.abs(local[1].y - oppositeY) / offsetHeight
+    // 拖动顶点
+    switch (direction) {
+      case 'tl':
+        diffX = deltaX + TL.x
+        diffY = deltaY + TL.y
+        Fixed = BR
+        BX = BL // 高度 TL BL
+        CX = TR // 宽度 TL TR
+        break
+      case 'tr':
+        diffX = deltaX + TR.x
+        diffY = deltaY + TR.y
+        Fixed = BL
+        BX = BR
+        CX = TL
+        break
+      case 'bl':
+        diffX = deltaX + BL.x
+        diffY = deltaY + BL.y
+        Fixed = TR
+        BX = TL
+        CX = BR
+        break
+      case 'br':
+        diffX = deltaX + BR.x
+        diffY = deltaY + BR.y
+        Fixed = TL
+        BX = TR
+        CX = BL
+        break
+      default:
+        break
+    }
+    Va = { x: diffX - Fixed.x, y: diffY - Fixed.y }
+    Vb = { x: BX.x - Fixed.x, y: BX.y - Fixed.y }
+    Vc = { x: CX.x - Fixed.x, y: CX.y - Fixed.y }
+    scaleB =
+      (Va.x * Vb.x + Va.y * Vb.y) / (Math.pow(Vb.x, 2) + Math.pow(Vb.y, 2))
+    scaleC =
+      (Va.x * Vc.x + Va.y * Vc.y) / (Math.pow(Vc.x, 2) + Math.pow(Vc.y, 2))
+    Vw = { x: Vb.x * scaleB, y: Vb.y * scaleB }
+    Vh = { x: Vc.x * scaleC, y: Vc.y * scaleC }
+    // 反推宽高
+    newX = Fixed.x + (Vw.x + Vh.x) / 2
+    newY = Fixed.y + (Vw.y + Vh.y) / 2
+    newW = Math.sqrt(Math.pow(Vw.x, 2) + Math.pow(Vw.y, 2))
+    newH = Math.sqrt(Math.pow(Vh.x, 2) + Math.pow(Vh.y, 2))
   }
-  if ([0, 2, 4, 6].indexOf(baseIndex) >= 0) {
-    scale.x = scale.y = realScale
-  } else if ([1, 5].indexOf(baseIndex) >= 0) {
-    scale.y = realScale
-  } else if ([3, 7].indexOf(baseIndex) >= 0) {
-    scale.x = realScale
-  }
-  // 获取新的坐标
-  const { x, y, w, h } = getNewRect(oPoint, scale, transformedRect, baseIndex)
-  item.x = toNumberFixed(x)
-  item.y = toNumberFixed(y)
-  item.w = toNumberFixed(w <= 1 ? 1 : w)
-  item.h = toNumberFixed(h <= 1 ? 1 : h)
+  item.x = newX - newW / 2
+  item.y = newY - newH / 2
+  item.w = newW
+  item.h = newH
 }
 
 const useResizable = modelValue => {
@@ -244,16 +237,16 @@ const useResizable = modelValue => {
     logLocal.value[1].x = event.pageX
     logLocal.value[1].y = event.pageY
     // 开始拉伸、防抖
-    // logTimer.value && clearTimeout(logTimer.value)
-    // logTimer.value = setTimeout(() => {
-    for (let i = 0; i < logState.value.length; i++) {
-      if (logDirection.value) {
-        setResizabl(logState.value[i], logLocal.value, logDirection.value)
+    logTimer.value && clearTimeout(logTimer.value)
+    logTimer.value = setTimeout(() => {
+      for (let i = 0; i < logState.value.length; i++) {
+        if (logDirection.value) {
+          setResizabl(logState.value[i], logLocal.value, logDirection.value)
+        }
       }
-    }
-    logLocal.value[0].x = logLocal.value[1].x
-    logLocal.value[0].y = logLocal.value[1].y
-    // })
+      logLocal.value[0].x = logLocal.value[1].x
+      logLocal.value[0].y = logLocal.value[1].y
+    })
   }
 
   // 结束
