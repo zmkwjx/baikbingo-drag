@@ -1,59 +1,27 @@
 <template>
   <div class="bk-drag-view" @mousedown="handleMouseDown('clear')">
-    <div
-      class="bk-drag-item"
-      v-for="(item, index) in modelValue"
-      :key="index"
-      :style="itemStyle(item)"
-      @mousedown.stop="handleMouseDown('move', $event, item, index)"
-    >
+    <div class="bk-drag-item" v-for="(item, index) in modelValue" :key="index" :style="itemStyle(item)"
+      @mousedown.stop="handleMouseDown('move', $event, item, index)">
       <div class="bk-drag-item-box">
         <div v-if="item.selected" class="bk-drag-item-select">
-          <div
-            v-if="item.rotatable ?? true"
-            class="rotate-circle"
-            @mousedown.stop="handleMouseDown('rotate', $event, item)"
-          />
-          <div
-            v-if="item.resizable ?? true"
-            class="line line-n"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'tm')"
-          />
-          <div
-            v-if="item.resizable ?? true"
-            class="line line-s"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'bm')"
-          />
-          <div
-            v-if="item.resizable ?? true"
-            class="line line-e"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'mr')"
-          />
-          <div
-            v-if="item.resizable ?? true"
-            class="line line-w"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'ml')"
-          />
-          <div
-            v-if="item.resizable ?? true"
-            class="circle circle-wn"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'tl')"
-          />
-          <div
-            v-if="item.resizable ?? true"
-            class="circle circle-en"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'tr')"
-          />
-          <div
-            v-if="item.resizable ?? true"
-            class="circle circle-es"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'br')"
-          />
-          <div
-            v-if="item.resizable ?? true"
-            class="circle circle-ws"
-            @mousedown.stop="handleMouseDown('resizable', $event, 'bl')"
-          />
+          <div v-if="item.rotatable ?? true" class="rotate-circle"
+            @mousedown.stop="handleMouseDown('rotate', $event, item)" />
+          <div v-if="item.resizable ?? true" class="line line-n"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'tm')" />
+          <div v-if="item.resizable ?? true" class="line line-s"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'bm')" />
+          <div v-if="item.resizable ?? true" class="line line-e"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'mr')" />
+          <div v-if="item.resizable ?? true" class="line line-w"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'ml')" />
+          <div v-if="item.resizable ?? true" class="circle circle-wn"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'tl')" />
+          <div v-if="item.resizable ?? true" class="circle circle-en"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'tr')" />
+          <div v-if="item.resizable ?? true" class="circle circle-es"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'br')" />
+          <div v-if="item.resizable ?? true" class="circle circle-ws"
+            @mousedown.stop="handleMouseDown('resizable', $event, 'bl')" />
         </div>
         <div class="bk-drag-item-inner">
           <slot :item="item" />
@@ -63,7 +31,7 @@
   </div>
 </template>
 <script setup>
-import { ref, toRefs } from 'vue'
+import { ref, shallowRef } from 'vue'
 import useResizable from './useResizable'
 import useRotate from './useRotate'
 import useMove from './useMove'
@@ -76,8 +44,8 @@ const props = defineProps({
     default: () => []
   }
 })
-// const emits = defineEmits(['update:modelValue'])
-const { modelValue } = toRefs(props)
+
+const modelValue = shallowRef(props.modelValue)
 
 // 组件样式
 const itemStyle = item => {
@@ -169,4 +137,6 @@ const { handleRotateStart, handleRotate, handleRotateEnd } = useRotate(
   modelValue
 )
 </script>
+
+
 <style src="./style.scss" lang="scss" scoped />
